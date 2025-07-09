@@ -1,0 +1,135 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 18px;
+}
+
+.no-bookmarks {
+  text-align: center;
+  padding: 40px;
+  color: #757575;
+}
+
+.bookmark-form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.tag-input {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.tag-input input {
+  flex: 1;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.tag {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tag button {
+  background: none;
+  border: none;
+  color: #1976d2;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.form-actions button {
+  flex: 1;
+}
+
+.search-form {
+  display: flex;
+  gap: 10px;
+}
+
+.search-form input {
+  flex: 1;
+}
+
+.bookmark-url {
+  color: #757575;
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.bookmark-description {
+  color: #424242;
+  margin: 10px 0;
+}
+
+.bookmark-tags {
+  margin: 10px 0;
+}
+
+.edit-btn {
+  background-color: #ff9800;
+  margin-right: 10px;
+}
+
+.edit-btn:hover {
+  background-color: #e68900;
+}
+
+.delete-btn {
+  background-color: #f44336;
+}
+
+.delete-btn:hover {
+  background-color: #d32f2f;
+}
+
+.add-bookmark-btn {
+  background-color: #4caf50;
+}
+
+.add-bookmark-btn:hover {
+  background-color: #388e3c;
+}
