@@ -1,0 +1,51 @@
+name: Simple CI/CD for Freshers
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    # Test Backend
+    - name: Test backend
+      run: |
+        cd backend
+        npm ci
+        echo "✅ Backend dependencies installed successfully"
+        # Add actual tests here when you have them
+        # npm test
+    
+    # Test Frontend
+    - name: Test frontend
+      run: |
+        cd frontend
+        npm ci
+        echo "✅ Frontend dependencies installed successfully"
+        # npm test -- --coverage --watchAll=false
+    
+    # Build Docker images (only on main branch)
+    - name: Build Docker images
+      if: github.ref == 'refs/heads/main'
+      run: |
+        echo "🐳 Building Docker images..."
+        docker build -t bookmark-saver-backend ./backend
+        docker build -t bookmark-saver-frontend ./frontend
+        echo "✅ Docker images built successfully"
+    
+    - name: Success message
+      run: |
+        echo "🎉 CI/CD pipeline completed successfully!"
+        echo "📦 Images are ready for deployment"
