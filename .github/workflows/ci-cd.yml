@@ -1,0 +1,71 @@
+name: Simple CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    name: Build, Push to Docker Hub and Deploy to EC2
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Login to Docker Hub
+      run: |
+        echo ${{ secrets.DOCKER_HUB_PASSWORD }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+
+    - name: Build Backend Docker Image
+      run: |
+        docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/bookmark-saver-backend:latest ./backend
+
+    - name: Build Frontend Docker Image
+      run: |
+        docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/bookmark-saver-frontend:latest ./frontend
+
+    - name: Push Backend Image to Docker Hub
+      run: |
+        docker push ${{ secrets.DOCKER_HUB_USERNAME }}/bookmark-saver-backend:latest
+
+    - name: Push Frontend Image to Docker Hub
+      run: |
+        docker push ${{ secrets.DOCKER_HUB_USERNAME }}/bookmark-saver-frontend:latest
+
+    - name: Deploy to EC2
+      run: |
+        echo "${{ secrets.EC2_SSH_KEY }}" > ec2-key.pem
+        chmod 600 ec2-key.pem
+        
+        # Copy files to EC2
+        scp -i ec2-key.pem -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:~/
+        scp -i ec2-key.pem -o StrictHostKeyChecking=no init.sql ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:~/
+        
+        # Deploy on EC2
+        ssh -i ec2-key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
+          # Stop existing containers
+          sudo docker-compose down || true
+          
+          # Pull latest images
+          sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/bookmark-saver-backend:latest
+          sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/bookmark-saver-frontend:latest
+          
+          # Set environment variable for docker-compose
+          export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
+          
+          # Start containers
+          sudo DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }} docker-compose up -d
+          
+          # Show running containers
+          sudo docker ps
+        EOF
+        
+        # Clean up
+        rm -f ec2-key.pem
+
+    - name: Deployment Status
+      run: |
+        echo "✅ Deployment completed successfully!"
+        echo "🌐 Your application is now live at: http://${{ secrets.EC2_HOST }}:3000"
+        echo "🔧 Backend API available at: http://${{ secrets.EC2_HOST }}:5001"
